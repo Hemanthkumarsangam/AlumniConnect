@@ -9,6 +9,7 @@ const peerServer = ExpressPeerServer(server, {
   debug: true
 });
 const { v4: uuidV4 } = require('uuid')
+let roomID;
 
 app.use('/peerjs', peerServer);
 
@@ -23,8 +24,13 @@ app.get('/:room', (req, res) => {
   res.render('room', { roomId: req.params.room })
 })
 
+app.get('/getRoomId', (req, res) =>{
+  res.send(roomID);
+})
+
 io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
+    roomID = roomId;
     socket.join(roomId)
     socket.to(roomId).broadcast.emit('user-connected', userId);
     // messages
